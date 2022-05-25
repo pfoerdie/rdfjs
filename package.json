@@ -1,0 +1,19 @@
+{
+  "name": "rdfjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pfoerdie/rdfjs.git"
+  },
+  "author": "pfoerdie@gmail.com",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/Pfoerdie/rdfjs/issues"
+  },
+  "homepage": "https://github.com/Pfoerdie/rdfjs#readme"
+}
