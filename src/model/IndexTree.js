@@ -1,6 +1,6 @@
 const
-    util = require('../util.js'),
-    model = require('./index.js');
+    util = require('../util'),
+    model = require('../model');
 
 /**
  * @template {number} [Depth = 1]
