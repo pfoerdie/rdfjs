@@ -1,5 +1,5 @@
 const
-    util = require('../util'),
+    util = require('@pfoerdie/utility'),
     model = require('../model');
 
 /**
@@ -14,7 +14,8 @@ class IndexTree {
     #entry = Object.create(null);
 
     #assertValidDepth(depth) {
-        if (!util.isPositiveInteger(depth)) {
+        // util.assert.number.integer(depth, 1);
+        if (!util.is.number.integer.positive(depth)) {
             const message = 'expected the depth to be an integer > 0';
             const error = new Error(message);
             Error.captureStackTrace(error, this.#assertValidDepth);
@@ -23,7 +24,7 @@ class IndexTree {
     }
 
     #assertValidKeys(keys) {
-        const passed = (keys.length === this.#depth);
+        // util.assert.array(keys, val => util.is.number.any(val) || util.is.string(val), this.#depth, this.#depth);
         if (keys.length !== this.#depth) {
             const message = 'expected to get ' + this.#depth + (this.#depth === 1 && ' key' || ' keys')
                 + ' but got ' + (keys.length < this.#depth && 'only ' || '') + keys.length;

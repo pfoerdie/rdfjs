@@ -6,6 +6,9 @@
   "files": [
     "src/*"
   ],
+  "dependencies": {
+    "@pfoerdie/utility": "^1.0.0"
+  },
   "devDependencies": {
     "jest": "^28.1.0"
   },
