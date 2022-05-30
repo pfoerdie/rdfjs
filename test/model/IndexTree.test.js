@@ -1,4 +1,4 @@
-const { IndexTree } = require('../src/model');
+const { IndexTree } = require('./model');
 
 describe('IndexTree', function () {
 

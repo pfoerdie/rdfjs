@@ -11,23 +11,29 @@ class IndexTree {
 
     static #defaultDepth = 1;
     static #defaultKeyValidator = util.create.CombinedValidator.OR(util.is.number.any, util.is.string);
+    static #defaultValueValidator = util.is;
 
     #size = 0;
     #entries = Object.create(null);
     #depth = IndexTree.#defaultDepth;
     #keyValidator = IndexTree.#defaultKeyValidator;
+    #valueValidator = IndexTree.#defaultValueValidator;
 
     /**
      * An IndexTree that can store entries of key value pairs.
      * The keys must be numbers or strings and the values can be anything.
      * @param {Depth} [depth] The number of keys necessary for this IndexTree instance.
      * @param {Function} [keyValidator] A validator function to validate each key. Should only allow numbers or strings.
+     * @param {Function} [valueValidator] A validator function to validate the value for each entry.
      */
-    constructor(depth = IndexTree.#defaultDepth, keyValidator = IndexTree.#defaultKeyValidator) {
+    constructor(depth = IndexTree.#defaultDepth, keyValidator = IndexTree.#defaultKeyValidator, valueValidator = IndexTree.#defaultValueValidator) {
         util.assert.number.integer(depth, 1);
         util.assert.function(keyValidator);
+        util.assert.function(valueValidator);
+
         this.#depth = depth;
         this.#keyValidator = keyValidator;
+        this.#valueValidator = valueValidator;
     }
 
     /**
@@ -87,6 +93,7 @@ class IndexTree {
     add(...keys /*, value*/) {
         const value = keys.pop();
         util.assert.array(keys, this.#keyValidator, this.#depth, this.#depth);
+        util.assert(value, this.#valueValidator);
 
         const lastKey = keys.pop();
         let target = this.#entries;
@@ -110,6 +117,7 @@ class IndexTree {
     set(...keys /*, value*/) {
         const value = keys.pop();
         util.assert.array(keys, this.#keyValidator, this.#depth, this.#depth);
+        util.assert(value, this.#valueValidator);
 
         const lastKey = keys.pop();
         let target = this.#entries;

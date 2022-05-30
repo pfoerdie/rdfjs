@@ -17,7 +17,7 @@
   },
   "jest": {
     "testMatch": [
-      "**/test/*.test.js"
+      "<rootDir>/test/**/*.test.js"
     ]
   },
   "repository": {
