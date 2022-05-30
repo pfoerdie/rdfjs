@@ -9,39 +9,25 @@ const
  */
 class IndexTree {
 
-    #depth = 1;
+    static #defaultDepth = 1;
+    static #defaultKeyValidator = util.create.CombinedValidator.OR(util.is.number.any, util.is.string);
+
     #size = 0;
-    #entry = Object.create(null);
-
-    #assertValidDepth(depth) {
-        // util.assert.number.integer(depth, 1);
-        if (!util.is.number.integer.positive(depth)) {
-            const message = 'expected the depth to be an integer > 0';
-            const error = new Error(message);
-            Error.captureStackTrace(error, this.#assertValidDepth);
-            throw error;
-        }
-    }
-
-    #assertValidKeys(keys) {
-        // util.assert.array(keys, val => util.is.number.any(val) || util.is.string(val), this.#depth, this.#depth);
-        if (keys.length !== this.#depth) {
-            const message = 'expected to get ' + this.#depth + (this.#depth === 1 && ' key' || ' keys')
-                + ' but got ' + (keys.length < this.#depth && 'only ' || '') + keys.length;
-            const error = new Error(message);
-            Error.captureStackTrace(error, this.#assertValidKeys);
-            throw error;
-        }
-    }
+    #entries = Object.create(null);
+    #depth = IndexTree.#defaultDepth;
+    #keyValidator = IndexTree.#defaultKeyValidator;
 
     /**
      * An IndexTree that can store entries of key value pairs.
      * The keys must be numbers or strings and the values can be anything.
-     * @param {Depth} depth The number of keys necessary for this IndexTree instance.
+     * @param {Depth} [depth] The number of keys necessary for this IndexTree instance.
+     * @param {Function} [keyValidator] A validator function to validate each key. Should only allow numbers or strings.
      */
-    constructor(depth = this.#depth) {
-        this.#assertValidDepth(depth);
+    constructor(depth = IndexTree.#defaultDepth, keyValidator = IndexTree.#defaultKeyValidator) {
+        util.assert.number.integer(depth, 1);
+        util.assert.function(keyValidator);
         this.#depth = depth;
+        this.#keyValidator = keyValidator;
     }
 
     /**
@@ -66,12 +52,12 @@ class IndexTree {
      * @returns {boolean} The existence of the keys in the IndexTree.
      */
     has(...keys) {
-        this.#assertValidKeys(keys);
+        util.assert.array(keys, this.#keyValidator, this.#depth, this.#depth);
 
-        let entry = this.#entry;
-        for (let key in keys) {
-            if (!(key in entry)) return false;
-            entry = entry[key];
+        let target = this.#entries;
+        for (let key of keys) {
+            if (!(key in target)) return false;
+            target = target[key];
         }
         return true;
     }
@@ -82,14 +68,14 @@ class IndexTree {
      * @returns {Value} The value for the keys in the IndexTree.
      */
     get(...keys) {
-        this.#assertValidKeys(keys);
+        util.assert.array(keys, this.#keyValidator, this.#depth, this.#depth);
 
-        let entry = this.#entry;
-        for (let key in keys) {
-            if (!(key in entry)) return;
-            entry = entry[key];
+        let target = this.#entries;
+        for (let key of keys) {
+            if (!(key in target)) return;
+            target = target[key];
         }
-        return entry;
+        return target;
     }
 
     /**
@@ -100,17 +86,17 @@ class IndexTree {
      */
     add(...keys /*, value*/) {
         const value = keys.pop();
-        this.#assertValidKeys(keys);
+        util.assert.array(keys, this.#keyValidator, this.#depth, this.#depth);
 
-        const lastKey = keys.shift();
-        let entry = this.#entry;
-        for (let key in keys) {
-            if (!(key in entry)) entry[key] = Object.create(null);
-            entry = entry[key];
+        const lastKey = keys.pop();
+        let target = this.#entries;
+        for (let key of keys) {
+            if (!(key in target)) target[key] = Object.create(null);
+            target = target[key];
         }
 
-        if (lastKey in entry) return false;
-        entry[lastKey] = value;
+        if (lastKey in target) return false;
+        target[lastKey] = value;
         this.#size++;
         return true;
     }
@@ -123,17 +109,17 @@ class IndexTree {
      */
     set(...keys /*, value*/) {
         const value = keys.pop();
-        this.#assertValidKeys(keys);
+        util.assert.array(keys, this.#keyValidator, this.#depth, this.#depth);
 
-        const lastKey = keys.shift();
-        let entry = this.#entry;
-        for (let key in keys) {
-            if (!(key in entry)) entry[key] = Object.create(null);
-            entry = entry[key];
+        const lastKey = keys.pop();
+        let target = this.#entries;
+        for (let key of keys) {
+            if (!(key in target)) target[key] = Object.create(null);
+            target = target[key];
         }
 
-        const existed = (lastKey in entry);
-        entry[lastKey] = value;
+        const existed = (lastKey in target);
+        target[lastKey] = value;
         if (!existed) this.#size++;
         return existed;
     }
@@ -144,20 +130,20 @@ class IndexTree {
      * @returns {boolean} True if the keys existed and the value had been deleted.
      */
     delete(...keys) {
-        this.#assertValidKeys(keys);
+        util.assert.array(keys, this.#keyValidator, this.#depth, this.#depth);
 
         const chain = [];
-        let entry = this.#entry;
-        for (let key in keys) {
-            if (!(key in entry)) return false;
-            chain.unshift([entry, key]);
-            entry = entry[key];
+        let target = this.#entries;
+        for (let key of keys) {
+            if (!(key in target)) return false;
+            chain.unshift([target, key]);
+            target = target[key];
         }
 
         this.#size--;
-        cleanup: for (let [entry, key] of chain) {
-            delete entry[key];
-            for (let otherKey in entry) break cleanup;
+        cleanup: for (let [target, key] of chain) {
+            delete target[key];
+            for (let otherKey in target) break cleanup;
         }
         return true;
     }

@@ -15,6 +15,11 @@
   "scripts": {
     "test": "jest"
   },
+  "jest": {
+    "testMatch": [
+      "**/test/*.test.js"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Pfoerdie/rdfjs.git"
