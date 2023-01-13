@@ -1,4 +1,4 @@
-# rdfjs
+# @pfoerdie/rdfjs
 
 - [RDF/JS: Data model specification](https://rdf.js.org/data-model-spec/)
 - [RDF/JS: Dataset specification](https://rdf.js.org/dataset-spec/)
